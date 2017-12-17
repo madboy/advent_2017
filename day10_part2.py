@@ -21,7 +21,7 @@ def reverse_section(l, pos, length):
         l[select] = section.pop()
     return l
 
-def create_dense_hash(l):
+def _create_dense_hash(l) -> str:
     """create a dense hash from a list of length 256
     """
     h = []
@@ -34,27 +34,32 @@ def create_dense_hash(l):
         h.append(r)
     dense_hash = ""
     for number in h:
-        dense_hash += "{:x}".format(number)
+        dense_hash += "{:02x}".format(number)
     return dense_hash
 
+def create_dense_hash(salt) -> str:
+    return _create_dense_hash(create_circular_list(salt))
 
-circular_list = list(range(0,256))
-lengths = "70,66,255,2,48,0,54,48,80,141,244,254,160,108,1,41"
+def create_circular_list(salt) -> list:
+    circular_list = list(range(0,256))
 
-ascii_lengths = []
-for l in lengths:
-    ascii_lengths.append(ord(l))
+    ascii_lengths = []
+    for l in salt:
+        ascii_lengths.append(ord(l))
 
-ascii_lengths.extend([17, 31, 73, 47, 23])
+    ascii_lengths.extend([17, 31, 73, 47, 23])
 
-# turn circular_list into a spare hash
-skip = 0
-position = 0
-list_length = len(circular_list)
-for turn in range(0, 64):
-    for length in ascii_lengths:
-        circular_list = reverse_section(circular_list, position, length)
-        position = (position + length + skip)%list_length
-        skip += 1
+    # turn circular_list into a spare hash
+    skip = 0
+    position = 0
+    list_length = len(circular_list)
+    for turn in range(0, 64):
+        for length in ascii_lengths:
+            circular_list = reverse_section(circular_list, position, length)
+            position = (position + length + skip)%list_length
+            skip += 1
+    return circular_list
 
-print(create_dense_hash(circular_list))
+if __name__ == '__main__':
+    salt = "70,66,255,2,48,0,54,48,80,141,244,254,160,108,1,41"
+    print(create_dense_hash(salt))
