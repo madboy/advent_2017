@@ -10,6 +10,7 @@ current = 1
 
 for i in range(0,50000000):
     pos = (inputs + pos) % value + 1
+    # we only care about the value if it's place in postition 1
     if pos == 1:
         current = value
     value += 1
