@@ -29,19 +29,18 @@ def calculate_value(current):
 
     Update current value in known values once it's calculated.
     """
+    x, y = current
     neighbours = [
-        Coord(current.x, current.y+1),
-        Coord(current.x-1, current.y+1),
-        Coord(current.x+1, current.y+1),
-        Coord(current.x-1, current.y),
-        Coord(current.x+1, current.y),
-        Coord(current.x, current.y -1),
-        Coord(current.x-1, current.y -1),
-        Coord(current.x +1, current.y -1),
+        Coord(x, y+1),
+        Coord(x-1, y+1),
+        Coord(x+1, y+1),
+        Coord(x-1, y),
+        Coord(x+1, y),
+        Coord(x, y -1),
+        Coord(x-1, y -1),
+        Coord(x +1, y -1),
     ]
-    value = 0
-    for neighbour in neighbours:
-        value += KNOWN.get(neighbour, 0)
+    value = sum(KNOWN.get(n, 0) for n in neighbours)
     KNOWN[current] = value
     return value
 

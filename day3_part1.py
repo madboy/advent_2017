@@ -19,9 +19,9 @@ import math
 Coord = namedtuple('Coord', ['x', 'y'])
 
 
-def distance(coord):
-    """manhattan distance between origo and coord"""
-    return abs(coord.x) + abs(coord.y)
+def distance(a, b=Coord(0,0)):
+    """manhattan distance between coordinates a and b"""
+    return abs(a.x - b.x) + abs(a.y - b.y)
 
 
 def get_coordinate(num):
