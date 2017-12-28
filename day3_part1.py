@@ -24,51 +24,8 @@ def distance(coord):
     return abs(coord.x) + abs(coord.y)
 
 
-def move_counter_clockwise(start, value, num):
-    """Move from lower right corner until we reach desired value
-
-    When moving counter clockwise we know that each number we go to
-    is lower than the one before.
-    """
-    current = start
-    side_length = int(math.sqrt(value)) - 1
-    for step in range(0, side_length*4):
-        if step < side_length:
-            # print("move left")
-            current = current._replace(x=current.x - 1)
-        elif step < side_length*2:
-            # print("move up")            
-            current = current._replace(y=current.y + 1)
-        elif step < side_length*3:
-            # print("move right")
-            current = current._replace(x=current.x + 1)
-        else:
-            # print("move down")
-            current = current._replace(y=current.y - 1)            
-        value -= 1
-        if value == num:
-            return current
-    return None
-
-def get_coordinate1(num):
-    """Find where in the memory our number is located
-    """
-    if num == 1:
-        return Coord(x=0, y=0)
-    corner = Coord(x=0, y=0)
-    value = 1
-    layer = 3
-    while True:
-        corner = corner._replace(x=corner.x + 1, y=corner.y - 1)
-        value = layer**2
-        if value > num:
-            return move_counter_clockwise(corner, value, num)
-        layer += 2
-
 def get_coordinate(num):
     """
-    >>> [1**2, 3**2, 7**2, 9**2]
-    [1, 9, 49, 81]
     >>> [1**2, 3**2, 5**2, 7**2, 9**2]
     [1, 9, 25, 49, 81]"""
     if num == 1:
@@ -82,9 +39,27 @@ def get_coordinate(num):
     # we start at layer 0
     layer = math.ceil(corner_base / 2) - 1
     corner_value = corner_base ** 2
-    return move_counter_clockwise(Coord(x=layer, y=-layer), corner_value, num)
+    side_length = int(corner_base) - 1
 
-# movement is getting to the right coordinate for 1
+    # move counter clockwise towards decreasing values
+    lower_right = corner_value
+    lower_left = corner_value-side_length    
+    upper_left = corner_value-2*side_length
+    upper_right = corner_value-3*side_length
+    
+    if lower_left < num:
+        # print("bottom side")
+        return Coord(layer - (lower_right - num), -layer)
+    elif upper_left < num:
+        # print("left side")
+        return Coord(-layer, layer - (lower_left - num))
+    elif upper_right < num:
+        # print("upper side")
+        return Coord(-layer + (upper_left - num), layer)
+    else:
+        # print("right side")
+        return Coord(layer, layer - (upper_right - num))
+
 
 TESTS = [
     (1, 0, Coord(0, 0)),
@@ -94,7 +69,7 @@ TESTS = [
     (28, 3, Coord(3, 0)),
     (37, 6, Coord(-3, 3)),
     (1024, 31, Coord(-15, 16)),
-    (368078, 371, Coord(-68, -303)),
+    (368078, 371, Coord(-68, -303)), # puzzle input
 ]
 
 for number, want, c in TESTS:
