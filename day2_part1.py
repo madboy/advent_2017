@@ -1,19 +1,26 @@
+"""
+The spreadsheet consists of rows of apparently-random numbers.
+To make sure the recovery process is on the right track, they need you 
+to calculate the spreadsheet's checksum. 
+For each row, determine the difference between the largest value 
+and the smallest value; the checksum is the sum of all of these differences.
+
+What is the checksum for the spreadsheet in your puzzle input?
+"""
 import fileinput
 
-def checksum(row):
-    numbers = row.split("\t")
-    low, high = 1000000000, 0
-    for number in numbers:
-        n = int(number)
-        if low > n:
-            low = n
-        if high < n:
-            high = n
-    return high - low
 
-total = 0
+def checksum(rows):
+    check = []
+    for row in rows:
+        numbers = list(map(int, row.split("\t")))
+        check.append(max(numbers) - min(numbers))
+    return sum(check)
+
+
+rows = []
 for line in fileinput.input():
     row = line.strip()
-    total += checksum(row)
+    rows.append(row)
 
-print(total)
+print(checksum(rows))
