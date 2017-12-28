@@ -27,7 +27,7 @@ def get_captcha() -> str:
     return captcha
 
 captcha = get_captcha()
-print("day1:", sum(list(filter_captcha(captcha, 1))))
+print("part1:", sum(list(filter_captcha(captcha, 1))))
 
 step = int(len(captcha)/2)
-print("day2:", sum(list(filter_captcha(captcha, step))))
+print("part2:", sum(list(filter_captcha(captcha, step))))
