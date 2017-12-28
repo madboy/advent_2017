@@ -9,42 +9,27 @@ of times 1 appears on the tape.
 Begin in state A.
 Perform a diagnostic checksum after 12208951 steps.
 """
-from collections import defaultdict, namedtuple, Counter
+from collections import defaultdict
 
-Action = namedtuple('Action', ['write', 'next', 'move'])
-State = namedtuple('State', ['name', 'action_if_0', 'action_if_1'])
-
-a = State('A', action_if_0=Action(1, 'B', 1), action_if_1=Action(0, 'E', -1))
-b = State('B', action_if_0=Action(1, 'C', -1), action_if_1=Action(0, 'A', 1))
-c = State('C', action_if_0=Action(1, 'D', -1), action_if_1=Action(0, 'C', 1))
-d = State('D', action_if_0=Action(1, 'E', -1), action_if_1=Action(0, 'F', -1))
-e = State('E', action_if_0=Action(1, 'A', -1), action_if_1=Action(1, 'C', -1))
-f = State('F', action_if_0=Action(1, 'E', -1), action_if_1=Action(1, 'A', 1))
+L, R = -1, 1
 
 states = {
-    a.name: a,
-    b.name: b,
-    c.name: c,
-    d.name: d,
-    e.name: e,
-    f.name: f,
+    'A': ((1, 'B', R), (0, 'E', L)),
+    'B': ((1, 'C', L), (0, 'A', R)),
+    'C': ((1, 'D', L), (0, 'C', R)),
+    'D': ((1, 'E', L), (0, 'F', L)),
+    'E': ((1, 'A', L), (1, 'C', L)),
+    'F': ((1, 'E', L), (1, 'A', R)),
 }
 
-tape = defaultdict(int)
-current_state = a
-cursor = 0
-for i in range(0,12208951):
-    cursor_value = tape.get(cursor, 0)
-    if cursor_value == 0:
-        w, n, m = current_state.action_if_0
-    else:
-        w, n, m = current_state.action_if_1
-    if w == 0:
-        del tape[cursor]
-    else:
-        tape[cursor] = w
-    cursor += m
-    current_state = states[n]
+def machine(states, current_state):
+    tape = defaultdict(int)
+    cursor = 0
+    for i in range(0,12208951):
+        cursor_value = tape.get(cursor, 0)
+        tape[cursor], n, m = states[current_state][cursor_value]
+        cursor += m
+        current_state = n
+    return tape
 
-c = Counter(tape.values())
-print(c[1])
+print(sum(machine(states, 'A').values()))
